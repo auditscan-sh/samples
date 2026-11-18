@@ -1,0 +1,218 @@
+services:
+  gateway:
+    image: gateway
+    ports:
+      - "8080:80"
+    depends_on:
+      - auth
+      - users
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '500m'
+          memory: 512Mi
+        reservations:
+          cpus: '500m'
+          memory: 512Mi
+    mem_limit: 512Mi
+  auth:
+    image: auth
+    depends_on:
+      - users
+      - sessions
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '250m'
+          memory: 256Mi
+        reservations:
+          cpus: '250m'
+          memory: 256Mi
+    mem_limit: 256Mi
+  users:
+    image: users
+    depends_on:
+      - notifications
+  orders:
+    image: orders
+    depends_on:
+      - payments
+      - inventory
+      - users
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1000m'
+          memory: 1Gi
+        reservations:
+          cpus: '1000m'
+          memory: 1Gi
+    mem_limit: 1Gi
+  payments:
+    image: payments
+    depends_on:
+      - billing
+      - invoices
+  billing:
+    image: billing
+    depends_on:
+      - invoices
+  invoices:
+    image: invoices
+  inventory:
+    image: inventory
+  cart:
+    image: cart
+    depends_on:
+      - pricing
+      - inventory
+  checkout:
+    image: checkout
+    depends_on:
+      - cart
+      - orders
+      - payments
+  pricing:
+    image: pricing
+    depends_on:
+      - catalog
+  catalog:
+    image: catalog
+    depends_on:
+      - search
+      - inventory
+  search:
+    image: search
+    depends_on:
+      - recommendations
+  recommendations:
+    image: recommendations
+    depends_on:
+      - reviews
+  reviews:
+    image: reviews
+    depends_on:
+      - users
+  shipping:
+    image: shipping
+    depends_on:
+      - tracking
+      - geo
+  tracking:
+    image: tracking
+    depends_on:
+      - notifications
+      - geo
+  notifications:
+    image: notifications
+    depends_on:
+      - email
+      - sms
+      - push
+  media:
+    image: media
+    depends_on:
+      - uploads
+  analytics:
+    image: analytics
+    depends_on:
+      - reporting
+      - audit
+  reporting:
+    image: reporting
+    depends_on:
+      - audit
+  sessions:
+    image: sessions
+    depends_on:
+      - cache
+  scheduler:
+    image: scheduler
+    depends_on:
+      - worker
+      - importer
+  worker:
+    image: worker
+    depends_on:
+      - exporter
+      - webhooks
+  importer:
+    image: importer
+    depends_on:
+      - catalog
+  exporter:
+    image: exporter
+    depends_on:
+      - reporting
+  webhooks:
+    image: webhooks
+    depends_on:
+      - integrations
+  integrations:
+    image: integrations
+    depends_on:
+      - crm
+      - currency
+  crm:
+    image: crm
+    depends_on:
+      - support
+      - tickets
+  support:
+    image: support
+    depends_on:
+      - tickets
+      - knowledge
+  tickets:
+    image: tickets
+    depends_on:
+      - notifications
+  knowledge:
+    image: knowledge
+    depends_on:
+      - search
+  currency:
+    image: currency
+    depends_on:
+      - pricing
+  email:
+    image: email
+  sms:
+    image: sms
+  push:
+    image: push
+  uploads:
+    image: uploads
+  cache:
+    image: cache
+  audit:
+    image: audit
+  geo:
+    image: geo
+  postgres:
+    image: postgres:15
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1000m'
+          memory: 2Gi
+        reservations:
+          cpus: '1000m'
+          memory: 2Gi
+    mem_limit: 2Gi
+  redis:
+    image: redis:7
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '250m'
+          memory: 512Mi
+        reservations:
+          cpus: '250m'
+          memory: 512Mi
+    mem_limit: 512Mi

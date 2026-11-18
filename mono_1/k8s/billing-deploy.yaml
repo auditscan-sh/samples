@@ -1,0 +1,27 @@
+# Intentionally over-provisioned billing deployment (cost demo).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing
+spec:
+  replicas: 4
+  template:
+    spec:
+      containers:
+        - name: billing
+          image: demo/billing:latest
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing
+spec:
+  ports:
+    - port: 8080
