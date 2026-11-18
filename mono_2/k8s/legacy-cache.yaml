@@ -1,0 +1,38 @@
+# UNUSED K8S SERVICE - different stack, wasteful
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-cache-redis-old
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: redis-old
+          image: redis:3-alpine  # outdated
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+            limits:
+              cpu: "2000m"
+              memory: "4Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin-unused
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: phpmyadmin
+          image: phpmyadmin:5.2
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"

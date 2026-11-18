@@ -1,0 +1,27 @@
+# Intentionally over-provisioned billing deployment (cost demo).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing
+spec:
+  replicas: 6  # wasteful - should be 2 with HPA
+  template:
+    spec:
+      containers:
+        - name: billing
+          image: demo/billing:latest
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "4Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing
+spec:
+  ports:
+    - port: 8080

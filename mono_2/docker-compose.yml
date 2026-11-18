@@ -1,0 +1,300 @@
+services:
+  gateway:
+    image: gateway
+    ports:
+      - "8080:80"
+    depends_on:
+      - auth
+      - users
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '500m'
+          memory: 512Mi
+        reservations:
+          cpus: '500m'
+          memory: 512Mi
+    mem_limit: 512Mi
+  auth:
+    image: auth
+    depends_on:
+      - users
+      - sessions
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '250m'
+          memory: 256Mi
+        reservations:
+          cpus: '250m'
+          memory: 256Mi
+    mem_limit: 256Mi
+  users:
+    image: users
+    depends_on:
+      - notifications
+  orders:
+    image: orders
+    depends_on:
+      - payments
+      - inventory
+      - users
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1000m'
+          memory: 1Gi
+        reservations:
+          cpus: '1000m'
+          memory: 1Gi
+    mem_limit: 1Gi
+  payments:
+    image: payments
+    depends_on:
+      - billing
+      - invoices
+  billing:
+    image: billing
+    depends_on:
+      - invoices
+  invoices:
+    image: invoices
+  inventory:
+    image: inventory
+  cart:
+    image: cart
+    depends_on:
+      - pricing
+      - inventory
+  checkout:
+    image: checkout
+    depends_on:
+      - cart
+      - orders
+      - payments
+  pricing:
+    image: pricing
+    depends_on:
+      - catalog
+  catalog:
+    image: catalog
+    depends_on:
+      - search
+      - inventory
+  search:
+    image: search
+    depends_on:
+      - recommendations
+  recommendations:
+    image: recommendations
+    depends_on:
+      - reviews
+  reviews:
+    image: reviews
+    depends_on:
+      - users
+  shipping:
+    image: shipping
+    depends_on:
+      - tracking
+      - geo
+  tracking:
+    image: tracking
+    depends_on:
+      - notifications
+      - geo
+  notifications:
+    image: notifications
+    depends_on:
+      - email
+      - sms
+      - push
+  media:
+    image: media
+    depends_on:
+      - uploads
+  analytics:
+    image: analytics
+    depends_on:
+      - reporting
+      - audit
+  reporting:
+    image: reporting
+    depends_on:
+      - audit
+  sessions:
+    image: sessions
+    depends_on:
+      - cache
+  scheduler:
+    image: scheduler
+    depends_on:
+      - worker
+      - importer
+  worker:
+    image: worker
+    depends_on:
+      - exporter
+      - webhooks
+  importer:
+    image: importer
+    depends_on:
+      - catalog
+  exporter:
+    image: exporter
+    depends_on:
+      - reporting
+  webhooks:
+    image: webhooks
+    depends_on:
+      - integrations
+  integrations:
+    image: integrations
+    depends_on:
+      - crm
+      - currency
+  crm:
+    image: crm
+    depends_on:
+      - support
+      - tickets
+  support:
+    image: support
+    depends_on:
+      - tickets
+      - knowledge
+  tickets:
+    image: tickets
+    depends_on:
+      - notifications
+  knowledge:
+    image: knowledge
+    depends_on:
+      - search
+  currency:
+    image: currency
+    depends_on:
+      - pricing
+  email:
+    image: email
+  sms:
+    image: sms
+  push:
+    image: push
+  uploads:
+    image: uploads
+  cache:
+    image: cache
+  audit:
+    image: audit
+  geo:
+    image: geo
+  postgres:
+    image: postgres:15
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1000m'
+          memory: 2Gi
+        reservations:
+          cpus: '1000m'
+          memory: 2Gi
+    mem_limit: 2Gi
+  redis:
+    image: redis:7
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '250m'
+          memory: 512Mi
+        reservations:
+          cpus: '250m'
+          memory: 512Mi
+    mem_limit: 512Mi
+  # --- INTENTIONALLY UNUSED / WASTEFUL SERVICES FOR COST SCAN DEMO ---
+  # 4 completely unused services (never referenced by app)
+  unused_analytics_v2:
+    image: analytics:v2-unused
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2000m'
+          memory: 4Gi
+        reservations:
+          cpus: '2000m'
+          memory: 4Gi
+    mem_limit: 4Gi
+  legacy_dashboard:
+    image: legacy-dashboard:0.9
+    ports:
+      - "3001:3000"
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1000m'
+          memory: 2Gi
+        reservations:
+          cpus: '1000m'
+          memory: 2Gi
+    mem_limit: 2Gi
+  abandoned_queue:
+    image: rabbitmq:3-management
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1000m'
+          memory: 2Gi
+        reservations:
+          cpus: '1000m'
+          memory: 2Gi
+    mem_limit: 2Gi
+  debug_profiler:
+    image: debug-profiler:latest
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1000m'
+          memory: 1Gi
+        reservations:
+          cpus: '1000m'
+          memory: 1Gi
+    mem_limit: 1Gi
+  # 2 small different stack services not being used (different tech)
+  php_legacy_admin:  # PHP stack - not used by main python/go app
+    image: phpmyadmin:5.2
+    environment:
+      UPLOAD_LIMIT: 50M
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '500m'
+          memory: 1Gi
+        reservations:
+          cpus: '500m'
+          memory: 1Gi
+    mem_limit: 1Gi
+  elastic_old:  # Java/Elasticsearch old version - unused
+    image: elasticsearch:7.17.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '2000m'
+          memory: 4Gi
+        reservations:
+          cpus: '2000m'
+          memory: 4Gi
+    mem_limit: 4Gi

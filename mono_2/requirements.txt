@@ -1,0 +1,9 @@
+# Intentionally vulnerable pins for supply-chain demo (DO NOT COPY).
+# Each pinned version below has a known CVE; the git dependency is
+# unpinned, so zero-day exposure cannot be ruled out.
+requests==2.28.0
+urllib3==1.26.5
+pillow==9.0.0
+django==3.2.0
+pyyaml==5.4
+git+https://github.com/example/unpinned-widget.git

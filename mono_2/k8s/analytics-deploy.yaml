@@ -1,0 +1,30 @@
+# INTENTIONALLY WASTEFUL / OVER-PROVISIONED FOR COST SCAN DEMO
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-unused
+spec:
+  replicas: 5  # over-provisioned, not needed
+  template:
+    spec:
+      containers:
+        - name: analytics
+          image: demo/analytics:latest
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "4Gi"
+            limits:
+              cpu: "4000m"
+              memory: "8Gi"
+          env:
+            - name: FAKE_API_KEY
+              value: "sk-FAKE-EXAMPLE-not-real-0000000000"  # fake placeholder
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-unused
+spec:
+  ports:
+    - port: 8081

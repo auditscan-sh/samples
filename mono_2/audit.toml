@@ -1,0 +1,50 @@
+[[requirement]]
+id = "r1"
+kind = "MUST"
+target = "**/util.py::compute_total"
+predicate = "exist"
+detail = "compute_total must exist"
+severity = "high"
+
+[[requirement]]
+id = "r2"
+kind = "MUST_NOT"
+target = "**"
+predicate = "call"
+value = "eval"
+detail = "No eval calls anywhere"
+severity = "critical"
+
+[[requirement]]
+id = "r3"
+kind = "INVARIANT"
+target = "**"
+predicate = "resource_closed"
+value = "io_open"
+detail = "all file opens must be released"
+severity = "high"
+
+[[requirement]]
+id = "r4"
+kind = "MUST"
+target = "**/app.py::process"
+predicate = "reachable"
+detail = "process must be reachable"
+severity = "medium"
+
+[[requirement]]
+id = "r5"
+kind = "INVARIANT"
+target = "**/app.py::run_console"
+predicate = "taint_free"
+detail = "no untrusted input may reach a dangerous sink"
+severity = "critical"
+
+[[requirement]]
+id = "r6"
+kind = "INVARIANT"
+target = "**/app.py::process"
+predicate = "latency_below"
+value = "1000"
+detail = "process must finish under 1000ms"
+severity = "low"
