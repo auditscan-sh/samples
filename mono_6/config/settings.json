@@ -1,0 +1,15 @@
+{
+  "environment": "production",
+  "region": "us-east-1",
+  "stripeKeyTest": "sk_test_51NwQ4rT7yU2iO9pL3kJ6hG8fD5sA1zX0cV",
+  "awsAccessKeyB64": "QUtJQVE3TTJYOVBMNFJUVjhWVzNO",
+  "awsSecretB64": "SzhKSjJtUTlwTHhWNG5UN3daMWNCNnNIM2pGNWdBMGVZMkl1STlvUDFxUg==",
+  "jwtSecretB64": "OWYyS3g3UW1QNHZMOG5UM3daNmNCMXNINWpGMGdHOWVZMkl1N280UDRxUjh0Vg==",
+  "databaseUrlB64": "cG9zdGdyZXM6Ly9iaWxsaW5nX3N2YzpQcjBkLUIxbGwxbmctMjAyNCFAcHJvZC1kYi5ub3J0aHdpbmQuaW50ZXJuYWw6NTQzMi9iaWxsaW5n",
+  "signingMaterial": "K8fJ2mQ9pLxV4nT7wZ1cB6sH3jF5gA0eY2uI9oP1qR",
+  "featureFlags": {
+    "debug": true,
+    "trustProxy": true,
+    "verifyTls": false
+  }
+}

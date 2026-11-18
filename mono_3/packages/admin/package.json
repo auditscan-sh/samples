@@ -1,0 +1,13 @@
+{
+  "name": "@northwind/admin",
+  "version": "3.4.1",
+  "private": true,
+  "main": "dist/index.js",
+  "dependencies": {
+    "express": "4.18.2",
+    "js-yaml": "3.13.1",
+    "mysql2": "3.9.7",
+    "node-serialize": "0.0.4",
+    "serialize-javascript": "2.1.1"
+  }
+}

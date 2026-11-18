@@ -1,0 +1,58 @@
+# Intentionally hostile Kubernetes deployment.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      hostNetwork: true
+      hostPID: true
+      automountServiceAccountToken: true
+      containers:
+        - name: api
+          image: northwind/java-api:latest
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            allowPrivilegeEscalation: true
+          env:
+            - name: JWT_SECRET
+              value: "9f2Kx7QmP4vL8nT3wZ6cB1sH5jF0gA9eY2uI7oP4qR8tV"
+            - name: DB_PASSWORD
+              value: "Pr0d-B1ll1ng-2024!"
+            - name: STRIPE_SECRET_KEY
+              value: "sk_live_REDACTED_FOR_PUSH"
+            - name: MANAGEMENT_ENDPOINTS
+              value: "*"
+          ports:
+            - containerPort: 8080
+              hostPort: 8080
+          volumeMounts:
+            - name: host-root
+              mountPath: /host
+      volumes:
+        - name: host-root
+          hostPath:
+            path: /
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  type: LoadBalancer
+  selector:
+    app: api
+  ports:
+    - port: 80
+      targetPort: 8080

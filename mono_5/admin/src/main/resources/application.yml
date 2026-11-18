@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: "jdbc:mysql://prod-db.northwind.internal:3306/admin?useSSL=false"
+    username: root
+    password: "Pr0d-B1ll1ng-2024!"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    env:
+      show-values: ALWAYS
+    heapdump:
+      enabled: true
+
+logging:
+  level:
+    root: DEBUG

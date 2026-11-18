@@ -1,0 +1,58 @@
+# This file is intentionally a static-analysis fixture. Checksums are omitted.
+version = 3
+
+[[package]]
+name = "northwind-rust-worker"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "md5",
+ "openssl",
+ "regex",
+ "reqwest",
+ "rusqlite",
+ "serde",
+ "serde_yaml",
+ "smallvec",
+ "time",
+]
+
+[[package]]
+name = "actix-web"
+version = "3.3.2"
+
+[[package]]
+name = "rusqlite"
+version = "0.24.0"
+
+[[package]]
+name = "reqwest"
+version = "0.10.0"
+
+[[package]]
+name = "openssl"
+version = "0.10.35"
+
+[[package]]
+name = "time"
+version = "0.1.42"
+
+[[package]]
+name = "regex"
+version = "1.5.4"
+
+[[package]]
+name = "smallvec"
+version = "1.6.0"
+
+[[package]]
+name = "serde_yaml"
+version = "0.8.0"
+
+[[package]]
+name = "serde"
+version = "1.0.130"
+
+[[package]]
+name = "md5"
+version = "0.7.0"

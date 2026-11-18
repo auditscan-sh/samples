@@ -1,0 +1,12 @@
+{
+  "name": "@northwind/shared",
+  "version": "3.4.1",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "lodash": "4.17.20",
+    "moment": "2.29.2",
+    "winston": "3.8.2"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://northwind-java.example/vex/mono5-2026-11-18",
+  "author": "Northwind Java Security (fictional)",
+  "timestamp": "2026-11-18T00:00:00Z",
+  "version": 1,
+  "tooling": "hand-written sample for scanner VEX accounting",
+  "statements": [
+    {
+      "vulnerability": { "name": "CVE-2021-44228" },
+      "products": [
+        { "@id": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1" }
+      ],
+      "status": "affected",
+      "action_statement": "Log4j 2.14.1 is imported and request values are logged; upgrade to 2.17.1 or later."
+    },
+    {
+      "vulnerability": { "name": "CVE-2019-12384" },
+      "products": [
+        { "@id": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.9.10" }
+      ],
+      "status": "affected",
+      "action_statement": "Jackson default typing is enabled in the admin module; upgrade and disable default typing."
+    },
+    {
+      "vulnerability": { "name": "CVE-2015-6420" },
+      "products": [
+        { "@id": "pkg:maven/commons-collections/commons-collections@3.2.1" }
+      ],
+      "status": "affected",
+      "action_statement": "The deserialization sink can reach commons-collections gadgets; remove the library."
+    },
+    {
+      "vulnerability": { "name": "CVE-2013-7285" },
+      "products": [
+        { "@id": "pkg:maven/com.thoughtworks.xstream/xstream@1.4.5" }
+      ],
+      "status": "affected",
+      "action_statement": "XStream is used for request XML; upgrade and restrict the allowlist."
+    },
+    {
+      "vulnerability": { "name": "CVE-2020-8908" },
+      "products": [
+        { "@id": "pkg:maven/com.google.guava/guava@24.1-jre" }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Guava Files.createTempDir is not called anywhere in this repository."
+    },
+    {
+      "vulnerability": { "name": "CVE-2023-32681" },
+      "products": [
+        { "@id": "pkg:pypi/requests@2.28.0" }
+      ],
+      "status": "affected",
+      "action_statement": "Release tooling imports requests and follows redirects; upgrade."
+    }
+  ]
+}

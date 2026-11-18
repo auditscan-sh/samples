@@ -1,0 +1,18 @@
+# Deliberately failing spec for the vulnerable Go target.
+[[requirement]]
+id = "no-eval"
+kind = "MUST_NOT"
+target = "**"
+predicate = "call"
+value = "eval"
+detail = "eval must not appear"
+severity = "critical"
+
+[[requirement]]
+id = "resources-closed"
+kind = "INVARIANT"
+target = "**"
+predicate = "resource_closed"
+value = "io_open"
+detail = "opened files must be released"
+severity = "high"

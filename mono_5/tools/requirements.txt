@@ -1,0 +1,8 @@
+# Release tooling for the Java platform. Intentionally vulnerable pins.
+requests==2.28.0
+urllib3==1.26.5
+pyyaml==5.4
+django==3.2.0
+pillow==9.0.0
+jinja2==2.10
+git+https://github.com/example/unpinned-java-widget.git

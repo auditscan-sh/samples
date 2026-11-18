@@ -1,0 +1,9 @@
+{
+  "name": "@northwind/ghost-service",
+  "version": "0.9.0",
+  "private": true,
+  "main": "dist/legacy.js",
+  "dependencies": {
+    "moment": "2.29.2"
+  }
+}

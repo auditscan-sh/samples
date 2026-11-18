@@ -1,0 +1,97 @@
+services:
+  api:
+    build: .
+    ports:
+      - "0.0.0.0:8080:8080"
+      - "0.0.0.0:5005:5005"
+    environment:
+      - JWT_SECRET=9f2Kx7QmP4vL8nT3wZ6cB1sH5jF0gA9eY2uI7oP4qR8tV
+      - DB_PASSWORD=Pr0d-B1ll1ng-2024!
+      - STRIPE_SECRET_KEY=sk_live_REDACTED_FOR_PUSH
+    depends_on:
+      - auth
+      - payments
+      - mysql
+    deploy:
+      replicas: 4
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8Gi
+        reservations:
+          cpus: '2'
+          memory: 4Gi
+
+  auth:
+    build: .
+    command: java -jar /app/auth.jar
+    depends_on:
+      - mysql
+      - redis
+
+  payments:
+    build: .
+    command: java -jar /app/payments.jar
+    depends_on:
+      - mysql
+      - billing-worker
+
+  admin:
+    build: .
+    command: java -jar /app/admin.jar
+    privileged: true
+    network_mode: host
+    volumes:
+      - /:/host
+    depends_on:
+      - mysql
+
+  files:
+    build: .
+    command: java -jar /app/files.jar
+    volumes:
+      - /srv/uploads:/srv/uploads
+    depends_on:
+      - redis
+
+  billing-worker:
+    build: .
+    command: java -jar /app/payments.jar --worker
+    depends_on:
+      - mysql
+      - kafka
+
+  legacy-sync:
+    build: .
+    command: java -jar /app/api.jar --legacy
+    # orphaned, no traffic, still deployed
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: Pr0d-B1ll1ng-2024!
+      MYSQL_DATABASE: billing
+    ports:
+      - "0.0.0.0:3306:3306"
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8Gi
+
+  redis:
+    image: redis:7
+    command: redis-server --requirepass R3d1s-Pr0d-9xK2mQ
+    ports:
+      - "0.0.0.0:6379:6379"
+
+  kafka:
+    image: bitnami/kafka:latest
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - "0.0.0.0:9092:9092"

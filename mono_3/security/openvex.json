@@ -1,0 +1,35 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://northwind-commerce.example/vex/mono3-2026-11-18",
+  "author": "Northwind Product Security (fictional)",
+  "timestamp": "2026-11-18T00:00:00Z",
+  "version": 1,
+  "tooling": "hand-written sample for scanner VEX accounting",
+  "statements": [
+    {
+      "vulnerability": { "name": "CVE-2021-23337" },
+      "products": [
+        { "@id": "pkg:npm/lodash@4.17.20" }
+      ],
+      "status": "affected",
+      "action_statement": "Upgrade lodash to 4.17.21 or later; template input reaches the vulnerable helper."
+    },
+    {
+      "vulnerability": { "name": "CVE-2021-44906" },
+      "products": [
+        { "@id": "pkg:npm/minimist@1.2.5" }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "minimist is declared in an internal manifest but is never imported by application code."
+    },
+    {
+      "vulnerability": { "name": "CVE-2023-32681" },
+      "products": [
+        { "@id": "pkg:pypi/requests@2.28.0" }
+      ],
+      "status": "affected",
+      "action_statement": "The release tooling imports requests; upgrade to 2.32.0 or later."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+name: deploy
+
+on:
+  pull_request_target:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions: write-all
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+
+      # Intentional secret exposure in logs.
+      - name: Show deployment context
+        run: |
+          echo "Deploying ${{ github.event.pull_request.title }}"
+          echo "AWS key: ${{ secrets.AWS_ACCESS_KEY_ID }}"
+          echo "Stripe: ${{ secrets.STRIPE_SECRET_KEY }}"
+          echo "Token: ${{ secrets.GITHUB_TOKEN }}"
+
+      # Intentional untrusted code execution from the PR.
+      - name: Install helpers
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/northwind/ci-helpers/main/install.sh | bash
+          npm install
+
+      - name: Build and test
+        run: npm run build || true
+
+      - name: Upload environment
+        uses: actions/upload-artifact@v3
+        with:
+          name: deploy-env
+          path: |
+            .env
+            packages/auth/keys/
+
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: ./scripts/deploy.sh ${{ github.event.pull_request.title }}

@@ -1,0 +1,119 @@
+services:
+  gateway:
+    build: .
+    ports:
+      - "0.0.0.0:8080:8080"
+    environment:
+      - JWT_SECRET=4Qm9pLxV2nT7wZ1cB6sH3jF5gA0eY8uI9oP2qR4tV7x
+      - STRIPE_SECRET_KEY=sk_live_REDACTED_FOR_PUSH
+      - DATABASE_URL=postgres://billing_svc:Pr0d-B1ll1ng-2024!@postgres:5432/billing
+    depends_on:
+      - auth
+      - orders
+      - payments
+      - files
+    deploy:
+      replicas: 4
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8Gi
+        reservations:
+          cpus: '2'
+          memory: 4Gi
+
+  auth:
+    build: .
+    command: /usr/local/bin/auth
+    depends_on:
+      - postgres
+      - redis
+
+  orders:
+    build: .
+    command: /usr/local/bin/orders
+    depends_on:
+      - postgres
+      - mongo
+
+  payments:
+    build: .
+    command: /usr/local/bin/payments
+    depends_on:
+      - postgres
+      - orders
+      - billing-worker
+
+  files:
+    build: .
+    command: /usr/local/bin/files
+    volumes:
+      - /srv/uploads:/srv/uploads
+    depends_on:
+      - redis
+
+  admin:
+    build: .
+    command: /usr/local/bin/admin
+    privileged: true
+    network_mode: host
+    volumes:
+      - /:/host
+    depends_on:
+      - postgres
+
+  worker:
+    build: .
+    command: /usr/local/bin/worker
+    depends_on:
+      - kafka
+      - postgres
+      - redis
+
+  billing-worker:
+    build: .
+    command: /usr/local/bin/billing-worker
+    depends_on:
+      - kafka
+      - postgres
+
+  legacy-sync:
+    build: .
+    command: /usr/local/bin/legacy-sync
+    # orphaned, no traffic, still running
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: Pr0d-B1ll1ng-2024!
+    ports:
+      - "0.0.0.0:5432:5432"
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8Gi
+
+  redis:
+    image: redis:7
+    command: redis-server --requirepass R3d1s-Pr0d-9xK2mQ
+    ports:
+      - "0.0.0.0:6379:6379"
+
+  mongo:
+    image: mongo:6
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD: Pr0d-B1ll1ng-2024!
+    ports:
+      - "0.0.0.0:27017:27017"
+
+  kafka:
+    image: bitnami/kafka:latest
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - "0.0.0.0:9092:9092"

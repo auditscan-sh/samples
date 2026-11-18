@@ -1,0 +1,42 @@
+# Over-provisioned payments deployment for cost/waste scoring.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+        - name: payments
+          image: northwind/java-payments:latest
+          resources:
+            requests:
+              cpu: "4000m"
+              memory: "8Gi"
+            limits:
+              cpu: "8000m"
+              memory: "16Gi"
+          env:
+            - name: DB_PASSWORD
+              value: "Pr0d-B1ll1ng-2024!"
+            - name: STRIPE_SECRET_KEY
+              value: "sk_live_REDACTED_FOR_PUSH"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments
+spec:
+  type: LoadBalancer
+  selector:
+    app: payments
+  ports:
+    - port: 443
+      targetPort: 8080

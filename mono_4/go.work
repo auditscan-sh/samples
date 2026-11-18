@@ -1,0 +1,12 @@
+go 1.21
+
+use (
+	./pkg/common
+	./services/gateway
+	./services/auth
+	./services/orders
+	./services/payments
+	./services/files
+	./services/admin
+	./services/worker
+)

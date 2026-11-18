@@ -1,0 +1,43 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://northwind-platform.example/vex/mono4-2026-11-18",
+  "author": "Northwind Platform Security (fictional)",
+  "timestamp": "2026-11-18T00:00:00Z",
+  "version": 1,
+  "tooling": "hand-written sample for scanner VEX accounting",
+  "statements": [
+    {
+      "vulnerability": { "name": "CVE-2020-26160" },
+      "products": [
+        { "@id": "pkg:golang/github.com/dgrijalva/jwt-go@3.2.0" }
+      ],
+      "status": "affected",
+      "action_statement": "jwt-go is imported by the auth service; migrate to golang-jwt/jwt/v5."
+    },
+    {
+      "vulnerability": { "name": "CVE-2020-26235" },
+      "products": [
+        { "@id": "pkg:cargo/time@0.1.42" }
+      ],
+      "status": "affected",
+      "action_statement": "The Rust worker parses timestamps with the vulnerable crate; upgrade time."
+    },
+    {
+      "vulnerability": { "name": "CVE-2022-24713" },
+      "products": [
+        { "@id": "pkg:cargo/regex@1.5.4" }
+      ],
+      "status": "affected",
+      "action_statement": "Regex parsing is reachable from the request handler; upgrade regex."
+    },
+    {
+      "vulnerability": { "name": "CVE-2021-44906" },
+      "products": [
+        { "@id": "pkg:npm/minimist@1.2.5" }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Inventory-only package; no Go service invokes minimist."
+    }
+  ]
+}

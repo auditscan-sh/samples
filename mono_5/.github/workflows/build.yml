@@ -1,0 +1,48 @@
+name: build
+
+on:
+  pull_request_target:
+  push:
+    branches: [main]
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: latest
+
+      - name: Diagnostics
+        run: |
+          echo "PR: ${{ github.event.pull_request.title }}"
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}"
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}"
+
+      - name: Bootstrap
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/northwind/java-ci/main/bootstrap.sh | bash
+          mvn -B -DskipTests package || true
+
+      - name: Upload settings
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-settings
+          path: |
+            .env
+            ~/.m2/settings.xml
+            k8s/legacy-secret.yaml
+
+      - name: Publish
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: ./scripts/publish.sh ${{ github.event.pull_request.title }}

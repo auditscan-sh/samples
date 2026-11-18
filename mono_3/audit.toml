@@ -1,0 +1,27 @@
+# Deliberately failing spec: this target is vulnerable on purpose.
+[[requirement]]
+id = "no-eval"
+kind = "MUST_NOT"
+target = "**"
+predicate = "call"
+value = "eval"
+detail = "eval must never appear in a commerce codebase"
+severity = "critical"
+
+[[requirement]]
+id = "no-shell-true"
+kind = "MUST_NOT"
+target = "**"
+predicate = "call"
+value = "exec"
+detail = "no shell execution from request-handling code"
+severity = "critical"
+
+[[requirement]]
+id = "resources-closed"
+kind = "INVARIANT"
+target = "**"
+predicate = "resource_closed"
+value = "io_open"
+detail = "all opened files must be released"
+severity = "high"

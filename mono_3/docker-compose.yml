@@ -1,0 +1,141 @@
+services:
+  gateway:
+    build: .
+    privileged: true
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/app
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=9f2Kx7QmP4vL8nT3wZ6cB1sH5jF0gA9eY2uI7oP4qR8tV
+      - STRIPE_SECRET_KEY=sk_live_REDACTED_FOR_PUSH
+      - DATABASE_URL=postgres://billing_svc:Pr0d-B1ll1ng-2024!@postgres:5432/billing
+    depends_on:
+      - auth
+      - payments
+      - catalog
+      - uploads
+    ports:
+      - "0.0.0.0:3000:3000"
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8Gi
+        reservations:
+          cpus: '2'
+          memory: 4Gi
+
+  auth:
+    build: .
+    command: node packages/auth/dist/index.js
+    environment:
+      - JWT_SECRET=9f2Kx7QmP4vL8nT3wZ6cB1sH5jF0gA9eY2uI7oP4qR8tV
+      - DATABASE_URL=postgres://auth_svc:Pr0d-B1ll1ng-2024!@postgres:5432/auth
+    depends_on:
+      - postgres
+      - redis
+
+  payments:
+    build: .
+    command: node packages/payments/dist/index.js
+    environment:
+      - STRIPE_SECRET_KEY=sk_live_REDACTED_FOR_PUSH
+      - DATABASE_URL=postgres://billing_svc:Pr0d-B1ll1ng-2024!@postgres:5432/billing
+    depends_on:
+      - postgres
+      - billing-worker
+
+  catalog:
+    build: .
+    command: node packages/catalog/dist/index.js
+    depends_on:
+      - mongo
+      - elasticsearch
+
+  uploads:
+    build: .
+    command: node packages/uploads/dist/index.js
+    volumes:
+      - /srv/uploads:/srv/uploads
+    depends_on:
+      - redis
+
+  admin:
+    build: .
+    command: node packages/admin/dist/index.js
+    privileged: true
+    volumes:
+      - /:/host
+    depends_on:
+      - postgres
+
+  webhooks:
+    build: .
+    command: node packages/webhooks/dist/index.js
+    depends_on:
+      - payments
+      - catalog
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: npm --workspace packages/web run preview
+    ports:
+      - "8080:8080"
+
+  billing-worker:
+    build: .
+    command: node packages/payments/dist/worker.js
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  ghost-service:
+    build: .
+    command: node packages/ghost-service/dist/legacy.js
+    # orphaned: nothing depends on it, no traffic, still deployed
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: Pr0d-B1ll1ng-2024!
+    ports:
+      - "0.0.0.0:5432:5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8Gi
+
+  mongo:
+    image: mongo:6
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD: Pr0d-B1ll1ng-2024!
+    ports:
+      - "0.0.0.0:27017:27017"
+
+  redis:
+    image: redis:7
+    command: redis-server --requirepass R3d1s-Pr0d-9xK2mQ
+    ports:
+      - "0.0.0.0:6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_PASS: Pr0d-B1ll1ng-2024!
+    ports:
+      - "0.0.0.0:5672:5672"
+      - "0.0.0.0:15672:15672"
+
+  elasticsearch:
+    image: elasticsearch:7.10.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "0.0.0.0:9200:9200"
